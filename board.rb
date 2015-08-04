@@ -23,7 +23,7 @@ class Board
       row.each_with_index do |col, col_idx|
         pos = [row_idx, col_idx]
         if row_idx == 6 && col_idx == 3
-          self[pos] = Knight.new(:white, pos, self)
+          self[pos] = Bishop.new(:white, pos, self)
         elsif row_idx == 7 && col_idx == 1
           self[pos] = Knight.new(:white, pos, self)
         end
@@ -43,7 +43,7 @@ class Board
     end
   end
 
-  def valid_move?(start_pos, end_pos, piece_delta)
+  def valid_move_step?(start_pos, end_pos, piece_delta)
 
     start_pos[0] + piece_delta[0] == end_pos[0] &&
     start_pos[1] + piece_delta[1] == end_pos[1] &&
@@ -52,5 +52,12 @@ class Board
     #   self[end_pos].color != self[start_pos].color
     # end
   end
+
+  def valid_move_slide?(start_pos, end_pos, piece_delta)
+
+  end
+
+
+
 
 end
