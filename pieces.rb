@@ -16,6 +16,13 @@ class Piece
 
   #  "[#{self.class}, #{color}, #{position}]"
   end
+
+  def move(start_pos, end_pos)
+    self.class::DELTA.any? do |delta|
+      current_board.valid_move?(start_pos, end_pos, delta)
+    end
+  end
+
 end
 #
 # class SlidingPiece < Piece
@@ -50,43 +57,29 @@ class SteppingPiece < Piece
   end
 
 
-    KNIGHT_DELTA = [
-      [ 2,  1],
-      [ 2, -1],
-      [-2,  1],
-      [-2, -2],
-      [ 1,  2],
-      [ 1, -2],
-      [-1,  2],
-      [-1, -2]
-    ]
 
-    KING_DELTA = [
-      [ 1, 1],
-      [ 1,-1],
-      [-1, 1],
-      [-1,-1],
-      [ 1, 0],
-      [-1, 0],
-      [ 0, 1],
-      [ 0,-1],
-    ]
+
+
 
 end
 
 class Knight < SteppingPiece
 #  def initialize(color, position, grid)
+  DELTA = [
+    [ 2,  1],
+    [ 2, -1],
+    [-2,  1],
+    [-2, -2],
+    [ 1,  2],
+    [ 1, -2],
+    [-1,  2],
+    [-1, -2]
+  ]
+
   def initialize(color, position, current_board)#, position, grid)
     super(color, position, current_board)#, position, grid)
   end
 
-  def move(start_pos, end_pos)
-    KNIGHT_DELTA.any? do |delta|
-      current_board.valid_move?(start_pos, end_pos, delta)
-    end
-
-
-  end
 
 
 
@@ -97,6 +90,17 @@ class Knight < SteppingPiece
 end
 
 class King < SteppingPiece
+
+  DELTA = [
+    [ 1, 1],
+    [ 1,-1],
+    [-1, 1],
+    [-1,-1],
+    [ 1, 0],
+    [-1, 0],
+    [ 0, 1],
+    [ 0,-1],
+  ]
 end
 
 class Pawn < Piece
