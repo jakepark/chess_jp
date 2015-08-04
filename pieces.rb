@@ -23,13 +23,6 @@ class Piece
     end
   end
 
-end
-
-class SlidingPiece < Piece
-  def initialize(color, position, current_board)#, position, grid)
-    super(color, position, current_board)#, position, grid)
-  end
-
   def get_delta(start_pos, end_pos)
     x_delta = end_pos[0] - start_pos[0]
     y_delta = end_pos[1] - start_pos[1]
@@ -40,7 +33,18 @@ class SlidingPiece < Piece
         multiple * deltoid[1] == y_delta
       end
     end
+
+    nil
   end
+
+end
+
+class SlidingPiece < Piece
+  def initialize(color, position, current_board)#, position, grid)
+    super(color, position, current_board)#, position, grid)
+  end
+
+
 end
 
 class Bishop < SlidingPiece
@@ -105,7 +109,7 @@ class Knight < SteppingPiece
     [ 2,  1],
     [ 2, -1],
     [-2,  1],
-    [-2, -2],
+    [-2, -1],
     [ 1,  2],
     [ 1, -2],
     [-1,  2],

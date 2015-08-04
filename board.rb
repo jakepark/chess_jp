@@ -1,4 +1,19 @@
 require_relative 'pieces.rb'
+require 'byebug'
+
+class Array
+  def add_arrays(other_array)
+    summed_array = []
+    self.each_index { |idx| summed_array << (self[idx] + other_array[idx]) }
+    summed_array
+  end
+
+  def subtract_arrays(other_array)
+    summed_array = []
+    self.each_index { |idx| summed_array << (self[idx] - other_array[idx]) }
+    summed_array
+  end
+end
 
 class Board
   attr_accessor :grid
@@ -43,19 +58,37 @@ class Board
     end
   end
 
-  def valid_move_step?(start_pos, end_pos, piece_delta)
-
-    start_pos[0] + piece_delta[0] == end_pos[0] &&
-    start_pos[1] + piece_delta[1] == end_pos[1] &&
+  def valid_move_step?(start_pos, end_pos)
+    !self[start_pos].get_delta(start_pos, end_pos).nil? &&
     (self[end_pos].nil? || (self[end_pos].color != self[start_pos].color))
-
-    #   self[end_pos].color != self[start_pos].color
-    # end
+    # doesn't account for opposite color collision yet
   end
 
-  def valid_move_slide?(start_pos, end_pos, piece_delta)
+  def valid_move_slide?(start_pos, end_pos)
+    # debugger
+    delta = self[start_pos].get_delta(start_pos, end_pos)
+    original_delta = delta
+    until start_pos.add_arrays(delta).add_arrays(original_delta) == end_pos  #.add_arrays(original_delta)
+      return false unless self[start_pos.add_arrays(delta)].nil?
+      delta = delta.add_arrays(original_delta)
+    end
 
+    unless (self[end_pos].nil? || (self[end_pos].color != self[start_pos].color))
+      return false
+    end
+
+    true
+
+    # valid_move_step?(start_pos.add_arrays(delta), end_pos)  # can't
   end
+  #
+  # def valid_move?
+  #   valid_move_step?
+  #   valid_move_recurse?
+  # end
+  #
+  #   valid_move_recurse?
+
 
 
 
