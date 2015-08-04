@@ -77,26 +77,4 @@ class Board
     true
   end
 
-  def render
-#    ("a".."h").to_a.each{|x| print "   #{x}  "}
-    (0..7).to_a.each{|x| print "  #{x} "}
-    print "\n"
-    print "---------------------------------"
-    print "\n"
-    @grid.each_with_index do |row, idx|
-      row.each do |col|
-        if col.nil?
-          print "|   "
-        else
-          print "| #{col.icon} "
-        end
-      end
-        print "| #{idx}"
-        print "\n"
-        print "---------------------------------"
-        print "\n"
-    end
-    nil
-  end
-
 end

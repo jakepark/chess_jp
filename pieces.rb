@@ -16,6 +16,16 @@ class Piece
   #  "[#{self.class}, #{color}, #{position}]"
   end
 
+  def icon
+    name = "#{self.class}"[0]
+    if @color == :white
+      name = name.colorize(:green)
+    else
+      name = name.colorize(:blue)
+    end
+    "#{name}"
+  end
+
   def move(start_pos, end_pos)
     self.class::DELTA.any? do |delta|
       current_board.valid_move?(start_pos, end_pos)
