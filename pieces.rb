@@ -2,9 +2,8 @@ class Piece
   attr_reader :type, :color, :moves
   attr_accessor :position, :current_board
 
-  def initialize(color, position, current_board)#, position, grid)
+  def initialize(color, position, current_board)
     @color = color
-    # might become redundant
     @position = position
     @current_board = current_board
   end
@@ -19,7 +18,7 @@ class Piece
 
   def move(start_pos, end_pos)
     self.class::DELTA.any? do |delta|
-      current_board.valid_move_step?(start_pos, end_pos, delta)
+      current_board.valid_move?(start_pos, end_pos)
     end
   end
 
@@ -101,6 +100,11 @@ class SteppingPiece < Piece
     super(color, position, current_board)#, position, grid)
   end
 
+  def get_delta(start_pos, end_pos)
+    x_delta = end_pos[0] - start_pos[0]
+    y_delta = end_pos[1] - start_pos[1]
+    [x_delta, y_delta]
+  end
 end
 
 class Knight < SteppingPiece
@@ -120,16 +124,9 @@ class Knight < SteppingPiece
     super(color, position, current_board)#, position, grid)
   end
 
-
-
-
-
-
-
-
 end
 
-class King < SteppingPiece
+class Ting < SteppingPiece
 
   DELTA = [
     [ 1, 1],
@@ -141,6 +138,10 @@ class King < SteppingPiece
     [ 0, 1],
     [ 0,-1],
   ]
+
+  def initialize(color, position, current_board)#, position, grid)
+    super(color, position, current_board)#, position, grid)
+  end
 end
 
 class Pawn < Piece

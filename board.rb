@@ -39,7 +39,9 @@ class Board
         pos = [row_idx, col_idx]
         if row_idx == 6 && col_idx == 3
           self[pos] = Bishop.new(:white, pos, self)
-        elsif row_idx == 7 && col_idx == 1
+        elsif row_idx == 4 && col_idx == 5
+          self[pos] = Ting.new(:black, pos, self)
+        elsif row_idx == 3 && col_idx == 3
           self[pos] = Knight.new(:white, pos, self)
         end
      end
@@ -58,19 +60,13 @@ class Board
     end
   end
 
-  def valid_move_step?(start_pos, end_pos)
-    !self[start_pos].get_delta(start_pos, end_pos).nil? &&
-    (self[end_pos].nil? || (self[end_pos].color != self[start_pos].color))
-    # doesn't account for opposite color collision yet
-  end
-
-  def valid_move_slide?(start_pos, end_pos)
-    # debugger
-    delta = self[start_pos].get_delta(start_pos, end_pos)
-    original_delta = delta
-    until start_pos.add_arrays(delta).add_arrays(original_delta) == end_pos  #.add_arrays(original_delta)
-      return false unless self[start_pos.add_arrays(delta)].nil?
+  def valid_move?(start_pos, end_pos)
+    #debugger
+    original_delta = self[start_pos].get_delta(start_pos, end_pos)
+    delta = [0, 0]
+    until start_pos.add_arrays(delta).add_arrays(original_delta) == end_pos
       delta = delta.add_arrays(original_delta)
+      return false unless self[start_pos.add_arrays(delta)].nil?
     end
 
     unless (self[end_pos].nil? || (self[end_pos].color != self[start_pos].color))
@@ -78,19 +74,6 @@ class Board
     end
 
     true
-
-    # valid_move_step?(start_pos.add_arrays(delta), end_pos)  # can't
   end
-  #
-  # def valid_move?
-  #   valid_move_step?
-  #   valid_move_recurse?
-  # end
-  #
-  #   valid_move_recurse?
-
-
-
-
 
 end
