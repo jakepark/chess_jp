@@ -1,3 +1,14 @@
+require 'byebug'
+require_relative 'board.rb'
+
+class Array
+  def multiply_array(other_array)
+    product_array = []
+    self.each_index{|idx| product_array << (self[idx] * other_array[idx]) }
+    product_array
+  end
+end
+
 class Piece
   attr_reader :type, :color, :moves
   attr_accessor :position, :current_board
@@ -156,4 +167,46 @@ class King < SteppingPiece
 end
 
 class Pawn < Piece
+
+  DELTA = [
+    [-1, 1],
+    [-1, 0],
+    [-1,-1]
+  ]
+
+  attr_accessor :has_moved
+
+  def initialize(color, position, current_board)
+    super(color, position, current_board)
+    @has_moved = false
+  end
+
+  def get_delta(start_pos, end_pos)
+    x_delta = end_pos[0] - start_pos[0]
+    y_delta = end_pos[1] - start_pos[1]
+    [x_delta, y_delta]
+  end
+
+  def move(start_pos, end_pos)
+#    debugger
+    delta = self.class::DELTA
+    delta += [[-2, 0]] unless has_moved?
+    if color == :black
+      delta = delta.map { |el| el.multiply_array([-1, 1]) }
+    end
+
+    delta.any? do |delta|
+      current_board.valid_pawn_move?(start_pos, end_pos, delta)
+    end
+
+  end
+
+  def moved
+    self.has_moved = true
+  end
+
+  def has_moved?
+    has_moved
+  end
+
 end
