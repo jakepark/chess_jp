@@ -57,21 +57,26 @@ class Board
    end
 
    def populate_white_pieces
-     self[[7, 7]], self[[7, 0]] = Rook.new(:white, nil, self), Rook.new(:white, nil, self)
-     self[[7, 6]], self[[7, 1]] = Horse.new(:white, nil, self), Horse.new(:white, nil, self)
-     self[[7, 5]], self[[7, 2]] = Bishop.new(:white, nil, self), Bishop.new(:white, nil, self)
-     self[[7, 3]] = Queen.new(:white, nil, self)
-     self[[7, 4]] = King.new(:white, nil, self)
-     grid[6].map! { |el| el = Pawn.new(:white, nil, self) }
+     self[[7, 7]], self[[7, 0]] = Rook.new(:white, [7,7], self), Rook.new(:white, [7,0], self)
+     self[[7, 6]], self[[7, 1]] = Horse.new(:white, [7,6], self), Horse.new(:white, [7,1], self)
+     self[[7, 5]], self[[7, 2]] = Bishop.new(:white, [7,5], self), Bishop.new(:white, [7,2], self)
+     self[[7, 3]] = Queen.new(:white, [7,3], self)
+     self[[7, 4]] = King.new(:white, [7,4], self)
+     grid[6].each_index { |idx| grid[6][idx] = Pawn.new(:white, [6,idx], self) }
+
+    #  grid[6].map! { |el| el = Pawn.new(:white, nil, self) }
    end
 
    def populate_black_pieces
-     self[[0, 7]], self[[0, 0]] = Rook.new(:black, nil, self), Rook.new(:black, nil, self)
-     self[[0, 6]], self[[0, 1]] = Horse.new(:black, nil, self), Horse.new(:black, nil, self)
-     self[[0, 5]], self[[0, 2]] = Bishop.new(:black, nil, self), Bishop.new(:black, nil, self)
-     self[[0, 3]] = Queen.new(:black, nil, self)
-     self[[0, 4]] = King.new(:black, nil, self)
-     grid[1].map! { |el| el = Pawn.new(:black, nil, self) }
+     self[[0, 7]], self[[0, 0]] = Rook.new(:black, [0,7], self), Rook.new(:black, [0,0], self)
+     self[[0, 6]], self[[0, 1]] = Horse.new(:black, [0,6], self), Horse.new(:black, [0,1], self)
+     self[[0, 5]], self[[0, 2]] = Bishop.new(:black, [0,5], self), Bishop.new(:black, [0,2], self)
+     self[[0, 3]] = Queen.new(:black, [0,3], self)
+     #self[[0, 4]] = King.new(:black, [0,4], self)
+     self[[5, 4]] = King.new(:black, [5,4], self)
+     grid[1].each_index { |idx| grid[1][idx] = Pawn.new(:black, [1,idx], self) }
+
+    #  grid[1].map! { |el| el = Pawn.new(:black, nil, self) }
    end
 
 
@@ -81,15 +86,44 @@ class Board
 
   def make_move(start_pos, end_pos)
     if self[start_pos].move(start_pos, end_pos)
+      self[start_pos].moved
+      self[start_pos].position = end_pos
       self[end_pos] = self[start_pos]
       self[start_pos] = nil
     end
   end
 
+  def in_check?(color)
+    king_pos = find_king(color)
+    grid.each_with_index do |row, row_idx|
+      row.each_with_index do |el, col_idx|
+        if !el.nil? && el.color != color
+            return true if el.move(el.position, king_pos)
+        end
+      end
+    end
+    false
+  end
+
+  def find_king(color)
+    king_pos = []
+
+    grid.each_with_index do |row, row_idx|
+      row.each_with_index do |el, col_idx|
+        if el.class == King && el.color == color
+          king_pos = [row_idx, col_idx]
+        end
+      end
+    end
+
+    king_pos
+  end
+
   def valid_move?(start_pos, end_pos)
-    #debugger
+
     original_delta = self[start_pos].get_delta(start_pos, end_pos)
     delta = [0, 0]
+    return false if original_delta.nil?
     until start_pos.add_arrays(delta).add_arrays(original_delta) == end_pos
       delta = delta.add_arrays(original_delta)
       return false unless self[start_pos.add_arrays(delta)].nil?
@@ -103,17 +137,14 @@ class Board
   end
 
   def valid_pawn_move?(start_pos, end_pos, delta)
-    # debugger
 
     if delta == self[start_pos].get_delta(start_pos, end_pos)
       if delta.first.abs == delta.last.abs
         if !self[end_pos].nil? && self[end_pos].color != self[start_pos].color
-          self[start_pos].moved
           return true
         end
       else
        if self[end_pos].nil?
-         self[start_pos].moved
          return true
        end
       end
@@ -124,8 +155,7 @@ class Board
 
   def render
 #    ("a".."h").to_a.each{|x| print "   #{x}  "}
-    (0..7).to_a.each{|x| print " #{x} "}
-    print "\n"
+    ("a".."h").to_a.each{|x| print " #{x} "}
     #print "---------------------------------"
     print "\n"
     @grid.each_with_index do |row, idx|
@@ -145,7 +175,7 @@ class Board
           end
         end
       end
-        print " #{idx}"
+        print " #{8 - idx}"
         print "\n"
     #    print "---------------------------------"
       #  print "\n"
