@@ -41,9 +41,9 @@ class Board
         if row_idx == 6 && col_idx == 3
           self[pos] = Bishop.new(:white, pos, self)
         elsif row_idx == 4 && col_idx == 5
-          self[pos] = Ting.new(:black, pos, self)
+          self[pos] = King.new(:black, pos, self)
         elsif row_idx == 3 && col_idx == 3
-          self[pos] = Knight.new(:white, pos, self)
+          self[pos] = Horse.new(:white, pos, self)
         end
      end
    end
@@ -59,6 +59,7 @@ class Board
       self[end_pos] = self[start_pos]
       self[start_pos] = nil
     end
+    self.render  # <-- Remove this when game class is fleshed out
   end
 
   def valid_move?(start_pos, end_pos)
@@ -77,26 +78,37 @@ class Board
     true
   end
 
+
   def render
 #    ("a".."h").to_a.each{|x| print "   #{x}  "}
-    (0..7).to_a.each{|x| print "  #{x} "}
+    (0..7).to_a.each{|x| print " #{x} "}
     print "\n"
-    print "---------------------------------"
+    #print "---------------------------------"
     print "\n"
     @grid.each_with_index do |row, idx|
-      row.each do |col|
+      row.each_with_index do |col, idy|
+        black_grid = (idx + idy) % 2 == 0
         if col.nil?
-          print "|   "
+          if black_grid
+            print "   "
+          else
+            print "   ".colorize(:background => :white)
+          end
         else
-          print "| #{col.icon} "
+          if black_grid
+            print " #{col.icon} "
+          else
+            print " #{col.icon} ".colorize(:background => :white)
+          end
         end
       end
-        print "| #{idx}"
+        print " #{idx}"
         print "\n"
-        print "---------------------------------"
-        print "\n"
+    #    print "---------------------------------"
+      #  print "\n"
     end
     nil
   end
+
 
 end

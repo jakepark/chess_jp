@@ -19,10 +19,11 @@ class Piece
   def icon
     name = "#{self.class}"[0]
     if @color == :white
-      name = name.colorize(:green)
+      name = name.colorize(:red)
     else
-      name = name.colorize(:blue)
+      name = name.colorize(:green)
     end
+
     "#{name}"
   end
 
@@ -117,7 +118,7 @@ class SteppingPiece < Piece
   end
 end
 
-class Knight < SteppingPiece
+class Horse < SteppingPiece
 #  def initialize(color, position, grid)
   DELTA = [
     [ 2,  1],
@@ -136,7 +137,7 @@ class Knight < SteppingPiece
 
 end
 
-class Ting < SteppingPiece
+class King < SteppingPiece
 
   DELTA = [
     [ 1, 1],
