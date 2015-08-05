@@ -29,14 +29,30 @@ class Board
     [pos[0], pos[1]].all? { |el| el.between?(0, 8) }
   end
 
+
+  # unless self[start_pos].piece_valid_move?(start_pos, end_pos)
+  #   raise ArgumentError.new
+  # end
+
+  # def make_move(start_pos, end_pos)
+  #   if self[start_pos].piece_valid_move?(start_pos, end_pos)
+  #     self[start_pos].moved
+  #     self[start_pos].position = end_pos
+  #     self[end_pos] = self[start_pos]
+  #     self[start_pos] = nil
+  #   end
+  # end
+
+
   def make_move(start_pos, end_pos)
-    # if self[start_pos].piece_valid_move?(start_pos, end_pos)
-    if valid_move?(start_pos, end_pos)
+    unless self[start_pos].piece_valid_move?(start_pos, end_pos)
+      raise InvalidMoveError.new
+    end
       self[start_pos].moved
       self[start_pos].position = end_pos
       self[end_pos] = self[start_pos]
       self[start_pos] = nil
-    end
+#    end
   end
 
   def valid_move?(start_pos, end_pos)
