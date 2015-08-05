@@ -37,7 +37,7 @@ class Piece
     "#{name}"
   end
 
-  def move(start_pos, end_pos)
+  def piece_valid_move?(start_pos, end_pos)
     self.class::DELTA.any? do |delta|
       current_board.valid_move?(start_pos, end_pos)
     end
@@ -201,7 +201,7 @@ class Pawn < Piece
     [x_delta, y_delta]
   end
 
-  def move(start_pos, end_pos)
+  def piece_valid_move?(start_pos, end_pos)
 #    debugger
     delta = self.class::DELTA
     delta += [[-2, 0]] unless has_moved?

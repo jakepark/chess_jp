@@ -63,8 +63,6 @@ class Board
      self[[7, 3]] = Queen.new(:white, [7,3], self)
      self[[7, 4]] = King.new(:white, [7,4], self)
      grid[6].each_index { |idx| grid[6][idx] = Pawn.new(:white, [6,idx], self) }
-
-    #  grid[6].map! { |el| el = Pawn.new(:white, nil, self) }
    end
 
    def populate_black_pieces
@@ -72,11 +70,9 @@ class Board
      self[[0, 6]], self[[0, 1]] = Horse.new(:black, [0,6], self), Horse.new(:black, [0,1], self)
      self[[0, 5]], self[[0, 2]] = Bishop.new(:black, [0,5], self), Bishop.new(:black, [0,2], self)
      self[[0, 3]] = Queen.new(:black, [0,3], self)
-     #self[[0, 4]] = King.new(:black, [0,4], self)
-     self[[5, 4]] = King.new(:black, [5,4], self)
+     self[[0, 4]] = King.new(:black, [0,4], self)
+     #self[[5, 4]] = King.new(:black, [5,4], self)
      grid[1].each_index { |idx| grid[1][idx] = Pawn.new(:black, [1,idx], self) }
-
-    #  grid[1].map! { |el| el = Pawn.new(:black, nil, self) }
    end
 
 
@@ -85,7 +81,7 @@ class Board
   end
 
   def make_move(start_pos, end_pos)
-    if self[start_pos].move(start_pos, end_pos)
+    if self[start_pos].piece_valid_move?(start_pos, end_pos)
       self[start_pos].moved
       self[start_pos].position = end_pos
       self[end_pos] = self[start_pos]
@@ -98,7 +94,7 @@ class Board
     grid.each_with_index do |row, row_idx|
       row.each_with_index do |el, col_idx|
         if !el.nil? && el.color != color
-            return true if el.move(el.position, king_pos)
+            return true if el.piece_valid_move?(el.position, king_pos)
         end
       end
     end
@@ -120,31 +116,28 @@ class Board
   end
 
   def valid_move?(start_pos, end_pos)
-
-    original_delta = self[start_pos].get_delta(start_pos, end_pos)
+    vector = move_vector(start_pos, end_pos)
     delta = [0, 0]
-    return false if original_delta.nil?
-    until start_pos.add_arrays(delta).add_arrays(original_delta) == end_pos
-      delta = delta.add_arrays(original_delta)
-      return false unless self[start_pos.add_arrays(delta)].nil?
+
+    return false if vector.nil?
+
+    until incremented_pos(start_pos, delta) == penultimate_pos(end_pos, vector)
+      delta = delta.add_arrays(vector)
+      return false unless self[incremented_pos(start_pos, delta)].nil?
     end
 
-    unless (self[end_pos].nil? || (self[end_pos].color != self[start_pos].color))
-      return false
-    end
+    return false unless valid_square?(start_pos, end_pos)
 
     true
   end
 
   def valid_pawn_move?(start_pos, end_pos, delta)
 
-    if delta == self[start_pos].get_delta(start_pos, end_pos)
-      if delta.first.abs == delta.last.abs
-        if !self[end_pos].nil? && self[end_pos].color != self[start_pos].color
-          return true
-        end
+    if valid_pawn_vector?(start_pos, end_pos, delta)
+      if pawn_capture?(delta)
+        return true if valid_pawn_capture?(start_pos, end_pos)
       else
-       if self[end_pos].nil?
+       if empty_square?(end_pos)
          return true
        end
       end
@@ -182,4 +175,45 @@ class Board
     end
     nil
   end
+
+  private
+
+  def empty_square?(pos)
+    self[pos].nil?
+  end
+
+  def unfriendly_fire?(start_pos, end_pos)
+    self[end_pos].color != self[start_pos].color
+  end
+
+  def move_vector(start_pos, end_pos)
+     self[start_pos].get_delta(start_pos, end_pos)
+   end
+
+  def penultimate_pos(pos, move_vector)
+    pos.subtract_arrays(move_vector)
+  end
+
+  def incremented_pos(pos, delta)
+    pos.add_arrays(delta)
+  end
+
+  def valid_square?(start_pos, end_pos)
+    #not occupied by piece with same colot
+    empty_square?(end_pos) || unfriendly_fire?(start_pos, end_pos)
+  end
+
+  def pawn_capture?(delta)
+    delta.first.abs == delta.last.abs
+  end
+
+  def valid_pawn_capture?(start_pos, end_pos)
+    !empty_square?(end_pos) && unfriendly_fire?(start_pos, end_pos)
+  end
+
+  def valid_pawn_vector?(start_pos, end_pos, delta)
+    delta == move_vector(start_pos, end_pos)
+  end
+
+
 end

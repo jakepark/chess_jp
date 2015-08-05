@@ -44,7 +44,7 @@ class Game
   end
 
   def get_move
-    puts "inital coordinates"
+    puts "initial coordinates"
     start = gets.chomp.split("")
     start = [ROW_HASH[start[1]], COL_HASH[start[0]]]
     puts "end coordinates"
