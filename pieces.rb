@@ -38,9 +38,9 @@ class Piece
   end
 
   def piece_valid_move?(start_pos, end_pos)
-    self.class::DELTA.any? do |delta|
-      current_board.valid_move?(start_pos, end_pos)
-    end
+    #essentially a dummy method, pawn has some conditons that must be passed
+    #before throwing back to board
+    current_board.valid_move?(start_pos, end_pos)
   end
 
   def get_delta(start_pos, end_pos)
@@ -56,7 +56,6 @@ class Piece
 
     nil
   end
-
 
   def moved
     self.has_moved = true
@@ -214,7 +213,5 @@ class Pawn < Piece
     end
 
   end
-
-
 
 end

@@ -32,14 +32,14 @@ class Game
 
   def play
     loop do
+      system "clear"
       board.render
       puts "CHECK" if board.in_check?(:black) || board.in_check?(:white)
       move = get_move
       board.make_move(move[0], move[1])
-      sleep(1)
-      system "clear"
-      board.render
-      #puts "CHECK" if board.in_check?(:black) || board.in_check?(:white)
+      #sleep(1)
+
+      #board.render
     end
   end
 

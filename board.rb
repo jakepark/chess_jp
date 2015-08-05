@@ -2,26 +2,6 @@ require_relative 'pieces.rb'
 require 'byebug'
 require 'colorize'
 
-class Array
-  def add_arrays(other_array)
-    summed_array = []
-    self.each_index { |idx| summed_array << (self[idx] + other_array[idx]) }
-    summed_array
-  end
-
-  def subtract_arrays(other_array)
-    summed_array = []
-    self.each_index { |idx| summed_array << (self[idx] - other_array[idx]) }
-    summed_array
-  end
-
-  def multiply_array(other_array)
-    product_array = []
-    self.each_index{|idx| product_array << (self[idx] * other_array[idx]) }
-    product_array
-  end
-end
-
 class Board
   attr_accessor :grid
 
@@ -41,78 +21,22 @@ class Board
   end
 
   def populate
-    # grid.each_with_index do |row, row_idx|
-    #   row.each_with_index do |col, col_idx|
-    #     pos = [row_idx, col_idx]
-    #     if row_idx == 6 && col_idx == 3
-    #       self[pos] = Bishop.new(:white, pos, self)
-    #     elsif row_idx == 4 && col_idx == 5
-    #       self[pos] = King.new(:black, pos, self)
-    #     elsif row_idx == 3 && col_idx == 3
-    #       self[pos] = Horse.new(:white, pos, self)
-    #     end
-    #  end
     populate_white_pieces
     populate_black_pieces
-   end
-
-   def populate_white_pieces
-     self[[7, 7]], self[[7, 0]] = Rook.new(:white, [7,7], self), Rook.new(:white, [7,0], self)
-     self[[7, 6]], self[[7, 1]] = Horse.new(:white, [7,6], self), Horse.new(:white, [7,1], self)
-     self[[7, 5]], self[[7, 2]] = Bishop.new(:white, [7,5], self), Bishop.new(:white, [7,2], self)
-     self[[7, 3]] = Queen.new(:white, [7,3], self)
-     self[[7, 4]] = King.new(:white, [7,4], self)
-     grid[6].each_index { |idx| grid[6][idx] = Pawn.new(:white, [6,idx], self) }
-   end
-
-   def populate_black_pieces
-     self[[0, 7]], self[[0, 0]] = Rook.new(:black, [0,7], self), Rook.new(:black, [0,0], self)
-     self[[0, 6]], self[[0, 1]] = Horse.new(:black, [0,6], self), Horse.new(:black, [0,1], self)
-     self[[0, 5]], self[[0, 2]] = Bishop.new(:black, [0,5], self), Bishop.new(:black, [0,2], self)
-     self[[0, 3]] = Queen.new(:black, [0,3], self)
-     self[[0, 4]] = King.new(:black, [0,4], self)
-     #self[[5, 4]] = King.new(:black, [5,4], self)
-     grid[1].each_index { |idx| grid[1][idx] = Pawn.new(:black, [1,idx], self) }
-   end
-
+  end
 
   def on_board?(pos)
     [pos[0], pos[1]].all? { |el| el.between?(0, 8) }
   end
 
   def make_move(start_pos, end_pos)
-    if self[start_pos].piece_valid_move?(start_pos, end_pos)
+    # if self[start_pos].piece_valid_move?(start_pos, end_pos)
+    if valid_move?(start_pos, end_pos)
       self[start_pos].moved
       self[start_pos].position = end_pos
       self[end_pos] = self[start_pos]
       self[start_pos] = nil
     end
-  end
-
-  def in_check?(color)
-    king_pos = find_king(color)
-    grid.each_with_index do |row, row_idx|
-      row.each_with_index do |el, col_idx|
-        if !el.nil? && el.color != color
-            return true if el.piece_valid_move?(el.position, king_pos)
-        end
-      end
-    end
-    false
-  end
-
-  def find_king(color)
-    king_pos = []
-
-    grid.each_with_index do |row, row_idx|
-      row.each_with_index do |el, col_idx|
-        if el.class == King && el.color == color
-          king_pos = [row_idx, col_idx]
-        end
-      end
-    end
-
-    king_pos
   end
 
   def valid_move?(start_pos, end_pos)
@@ -146,6 +70,32 @@ class Board
     false
   end
 
+  def in_check?(color)
+    king_pos = find_king(color)
+
+    grid.each_with_index do |row, row_idx|
+      row.each_with_index do |piece, col_idx| #should piece be "square_contents"?
+        if !piece.nil? && piece.color != color
+          return true if piece.piece_valid_move?(piece.position, king_pos)
+        end
+      end
+    end
+
+    false
+  end
+
+  def find_king(color)
+    king_pos = []
+
+    grid.each_with_index do |row, row_idx|
+      row.each_with_index do |piece, col_idx|
+        king_pos = [row_idx, col_idx] if friendly_king?(piece, color)
+      end
+    end
+
+    king_pos
+  end
+
   def render
 #    ("a".."h").to_a.each{|x| print "   #{x}  "}
     ("a".."h").to_a.each{|x| print " #{x} "}
@@ -177,6 +127,10 @@ class Board
   end
 
   private
+
+  def friendly_king?(piece, color)
+    piece.class == King && piece.color == color
+  end
 
   def empty_square?(pos)
     self[pos].nil?
@@ -215,5 +169,43 @@ class Board
     delta == move_vector(start_pos, end_pos)
   end
 
+ #forgive us
+   def populate_white_pieces
+     self[[7, 7]], self[[7, 0]] = Rook.new(:white, [7,7], self), Rook.new(:white, [7,0], self)
+     self[[7, 6]], self[[7, 1]] = Horse.new(:white, [7,6], self), Horse.new(:white, [7,1], self)
+     self[[7, 5]], self[[7, 2]] = Bishop.new(:white, [7,5], self), Bishop.new(:white, [7,2], self)
+     self[[7, 3]] = Queen.new(:white, [7,3], self)
+     self[[7, 4]] = King.new(:white, [7,4], self)
+     grid[6].each_index { |idx| grid[6][idx] = Pawn.new(:white, [6,idx], self) }
+   end
 
+   def populate_black_pieces
+     self[[0, 7]], self[[0, 0]] = Rook.new(:black, [0,7], self), Rook.new(:black, [0,0], self)
+     self[[0, 6]], self[[0, 1]] = Horse.new(:black, [0,6], self), Horse.new(:black, [0,1], self)
+     self[[0, 5]], self[[0, 2]] = Bishop.new(:black, [0,5], self), Bishop.new(:black, [0,2], self)
+     self[[0, 3]] = Queen.new(:black, [0,3], self)
+     self[[0, 4]] = King.new(:black, [0,4], self)
+     #self[[5, 4]] = King.new(:black, [5,4], self)
+     grid[1].each_index { |idx| grid[1][idx] = Pawn.new(:black, [1,idx], self) }
+   end
+end
+
+class Array
+  def add_arrays(other_array)
+    summed_array = []
+    self.each_index { |idx| summed_array << (self[idx] + other_array[idx]) }
+    summed_array
+  end
+
+  def subtract_arrays(other_array)
+    summed_array = []
+    self.each_index { |idx| summed_array << (self[idx] - other_array[idx]) }
+    summed_array
+  end
+
+  def multiply_array(other_array)
+    product_array = []
+    self.each_index{|idx| product_array << (self[idx] * other_array[idx]) }
+    product_array
+  end
 end
