@@ -2,12 +2,14 @@ require_relative 'board.rb'
 require 'colorize'
 
 class Game
-  attr_reader :board 
-  attr_accessor :color
+  attr_reader :board
+  attr_accessor :color, :saved_grid, :error_message
 
   def initialize
     @board = Board.new
     @color = :white
+    @saved_grid = nil
+    @error_message = ""
   end
 
   COL_HASH = {
@@ -33,28 +35,91 @@ class Game
   }
 
   def play
+
     loop do
       system "clear"
       board.render
-      puts "Player's turn: #{color.to_s}"
-      puts "CHECK" if board.in_check?(:black) || board.in_check?(:white)
-      begin
-        move = get_move
-      rescue InvalidInputError
-        puts "Enter valid coordinates (i.e., a1 through h8)"
-        puts "re-enter all coordinates: "
-        retry
-      end
-      begin
-        board.make_move(move[0], move[1])
-      rescue InvalidMoveError
-        puts "That's an invalid move!"
-        move = get_move
-        retry
-      end
-
+      display_turn
+      in_check?
+      puts error_message
+      move = get_coordinates
+      check_color(move)
+      check_validity(move)
+      check_check
       switch_colors!
+      self.error_message = ""
     end
+  end
+
+  def check_color?(move)
+    if board[move[0]].color != color
+      puts "Invalid color!"
+      raise InvalidColorError
+    end
+  end
+
+  def check_color(move)
+    begin
+      check_color?(move)
+    rescue InvalidColorError
+      self.error_message = "That's not yours!! Select your own piece."
+      play
+      retry
+    end
+  end
+
+  def check_check
+    begin
+      still_in_check?
+    rescue StillInCheckError
+      self.board.grid = saved_grid
+      self.error_message = "That move leaves you in Czech. Live less dangerously."
+      play
+    end
+  end
+
+  def still_in_check?
+    if board.in_check?(color)
+      raise StillInCheckError
+    end
+  end
+
+  def color_error
+    begin
+    play
+    rescue InvalidColorError
+
+      self.error_message = "You must move your own piece!"
+      retry
+    end
+  end
+
+  def display_turn
+    puts "Player's turn: #{color.to_s}"
+  end
+
+  def get_coordinates
+    begin
+      move = get_move
+    rescue InvalidInputError
+      self.error_message = "Enter valid coordinates (i.e., a1 through h8) \nre-enter all coordinates: "
+      play
+    end
+  end
+
+  def check_validity(move)
+    begin
+      self.saved_grid = board.grid.deep_dup
+      board.make_move(move[0], move[1])
+    rescue InvalidMoveError
+      self.error_message = "That's an invalid move!"
+      play
+      retry
+    end
+  end
+
+  def in_check?
+    puts "CHECK!" if board.in_check?(:black) || board.in_check?(:white)
   end
 
   def switch_colors!
@@ -80,10 +145,12 @@ class Game
       ending = [ROW_HASH[ending[1]], COL_HASH[ending[0]]]
 
       [start, ending]
-
     end
 
   end
+
+
+
 end
 
 class InvalidMoveError < StandardError
@@ -92,5 +159,24 @@ end
 class InvalidInputError < StandardError
 end
 
+class InvalidColorError < StandardError
+end
+
+class StillInCheckError < StandardError
+end
+
+class Array
+
+  def deep_dup
+    self.map do |el|
+      if el.is_a?(Array)
+        el.dup.deep_dup
+      else
+        el
+      end
+    end
+  end
+
+end
 
 Game.new.play

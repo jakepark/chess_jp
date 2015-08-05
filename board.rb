@@ -42,7 +42,9 @@ class Board
   #     self[start_pos] = nil
   #   end
   # end
-
+  def piece_color(pos)
+    self[pos].color
+  end
 
   def make_move(start_pos, end_pos)
     unless self[start_pos].piece_valid_move?(start_pos, end_pos)
@@ -117,7 +119,7 @@ class Board
     ("a".."h").to_a.each{|x| print " #{x} "}
     #print "---------------------------------"
     print "\n"
-    @grid.each_with_index do |row, idx|
+    grid.each_with_index do |row, idx|
       row.each_with_index do |col, idy|
         black_grid = (idx + idy) % 2 == 0
         if col.nil?
