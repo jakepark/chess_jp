@@ -39,6 +39,9 @@ class Game
     loop do
       system "clear"
       board.render
+      # puts "quit"
+      # input = gets.chomp
+      # break if input == "q"
       display_turn
       in_check?
       puts error_message
@@ -47,6 +50,7 @@ class Game
       check_validity(move)
       check_check
       switch_colors!
+      # checkmate?
       self.error_message = ""
     end
   end

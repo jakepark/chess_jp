@@ -3,10 +3,11 @@ require 'byebug'
 require 'colorize'
 
 class Board
-  attr_accessor :grid
+  attr_accessor :grid, :saved_grid
 
   def initialize
     @grid = Array.new(8) {Array.new(8)}
+    @saved_grid = nil
     populate
   end
 
@@ -144,6 +145,51 @@ class Board
     nil
   end
 
+  # def find_pieces(color)
+  #   pieces = []
+  #
+  #   grid.each_with_index do |row, row_idx|
+  #     row.each_with_index do |piece, col_idx|
+  #       pieces << [row_idx, col_idx] if friendly_piece?(piece, color)
+  #     end
+  #   end
+  #
+  #   pieces
+  # end
+  #
+  # def friendly_piece?(piece, color)
+  #   !piece.nil? && piece.color == color
+  # end
+  #
+  # def check_mate?(color)
+  #   #debugger
+  #   self.saved_grid = grid.deep_dup
+  #   pieces = find_pieces(color)
+  #   pieces.each do |piece|
+  #     self.grid = saved_grid.deep_dup
+  #     grid.each_with_index do |row, row_idx|
+  #       row.each_index do |col_idx|
+  #         #debugger
+  #         end_pos = [row_idx, col_idx]
+  #
+  #         if self[piece].piece_valid_move?(piece, end_pos)
+  #           make_move(piece, end_pos)
+  #           #debugger
+  #           if in_check?(self[piece].color)
+  #             self.grid = saved_grid.deep_dup
+  #           else
+  #             return false
+  #           end
+  #         else
+  #           self.grid = saved_grid.deep_dup
+  #           next
+  #         end
+  #       end
+  #     end
+  #   end
+  #   true
+  # end
+
   private
 
   def friendly_king?(piece, color)
@@ -226,4 +272,18 @@ class Array
     self.each_index{|idx| product_array << (self[idx] * other_array[idx]) }
     product_array
   end
+end
+
+class Array
+
+  def deep_dup
+    self.map do |el|
+      if el.is_a?(Array)
+        el.dup.deep_dup
+      else
+        el
+      end
+    end
+  end
+
 end
