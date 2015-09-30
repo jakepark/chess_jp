@@ -1,0 +1,6 @@
+Chess:
+
+In a command line, run game.rb. Follow the on screen prompts.
+
+~/desktop/chess$ ruby game.rb 
+

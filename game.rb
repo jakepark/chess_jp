@@ -133,7 +133,7 @@ class Game
   def get_move
     begin
       puts "initial coordinates"
-      print (">>>").colorize(:background => :green)
+      print (">")
       start = gets.chomp.split("")
       unless start[0].between?("a", "h") && start[1..-1].join.between?("1", "8")
         raise InvalidInputError.new

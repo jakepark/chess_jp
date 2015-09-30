@@ -1,0 +1,8 @@
+Chess:
+
+In a command line interpreter for Ruby, for example PRY or IRB,
+run game.rb. Follow the on screen prompts.
+
+$ pry
+$ 
+Ruby game.rb 
