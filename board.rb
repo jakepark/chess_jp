@@ -117,21 +117,24 @@ class Board
 
   def render
 #    ("a".."h").to_a.each{|x| print "   #{x}  "}
+    print "   "
     ("a".."h").to_a.each{|x| print " #{x} "}
     #print "---------------------------------"
     print "\n"
     grid.each_with_index do |row, idx|
+        print " #{8 - idx} "
       row.each_with_index do |col, idy|
+
         black_grid = (idx + idy) % 2 == 0
         if col.nil?
           if black_grid
-            print "   "
+            print "   ".colorize(:background => :blue)
           else
             print "   ".colorize(:background => :white)
           end
         else
           if black_grid
-            print " #{col.icon} "
+            print " #{col.icon} ".colorize(:background => :blue)
           else
             print " #{col.icon} ".colorize(:background => :white)
           end
@@ -139,9 +142,13 @@ class Board
       end
         print " #{8 - idx}"
         print "\n"
+
     #    print "---------------------------------"
       #  print "\n"
     end
+    print "   "
+    ("a".."h").to_a.each{|x| print " #{x} "}
+    print "\n"
     nil
   end
 

@@ -132,15 +132,15 @@ class Game
 
   def get_move
     begin
-      puts "initial coordinates"
-      print (">")
+      puts "Select piece to move."
+      print (">  ")
       start = gets.chomp.split("")
       unless start[0].between?("a", "h") && start[1..-1].join.between?("1", "8")
         raise InvalidInputError.new
       end
       start = [ROW_HASH[start[1]], COL_HASH[start[0]]]
 
-      puts "end coordinates"
+      puts "Select location to move piece."
       print ">  "
       ending = gets.chomp.split("")
       unless ending[0].between?("a", "h") && ending[1..-1].join.between?("1", "8")

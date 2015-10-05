@@ -20,22 +20,50 @@ class Piece
     @has_moved = false
   end
 
+  CHESS_SYMBOLS = {
+    #white
+    "wp"=> "\u2659",
+    "wh"=> "\u2658",
+    "wb"=> "\u2657",
+    "wr"=> "\u2656",
+    "wq"=> "\u2655",
+    "wk"=> "\u2654",
+
+    #black
+    "bp"=> "\u265F",
+    "bh"=> "\u265E",
+    "bb"=> "\u265D",
+    "br"=> "\u265C",
+    "bq"=> "\u265B",
+    "bk"=> "\u265A",
+  }
+
+# puts checkmark.encode('utf-8')
+
   def inspect
-    name = "#{self.class}"[0]
     color = "#{self.color}"[0]
-    "[#{name}-#{color}]"
+    name = "#{self.class}"[0].downcase
+
+    letter = color + name
+    CHESS_SYMBOLS[letter]
   end
 
   def icon
-    name = "#{self.class}"[0]
-    if @color == :white
-      name = name.colorize(:green)
-    else
-      name = name.colorize(:red)
-    end
+    color = "#{self.color}"[0]
+    name = "#{self.class}"[0].downcase
 
-    "#{name}"
+    letter = color + name
+    symbol = CHESS_SYMBOLS[letter].colorize(:black)
+    #
+    # if @color == :white
+    #   symbol = symbol.colorize(:black)
+    # else
+    #   symbol = symbol.colorize(:black)
+    # end
+    # debugger
   end
+
+
 
   def piece_valid_move?(start_pos, end_pos)
     #essentially a dummy method, pawn has some conditons that must be passed
